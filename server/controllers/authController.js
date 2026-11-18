@@ -136,3 +136,8 @@ exports.logout = (req, res) => {
 
   res.json({ message: "Déconnexion réussie" });
 };
+
+//récupere les infos de user connecté dans CareerTrack
+exports.me = (req, res) => {
+  res.json({ user: req.user });
+};
