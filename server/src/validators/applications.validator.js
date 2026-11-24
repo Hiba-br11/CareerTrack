@@ -18,7 +18,11 @@ const applicationFields = z.object({
   applicationType: z.enum(APPLICATION_TYPES),
   applicationDate: z.coerce.date(),
   status: z.enum(APPLICATION_STATUSES).optional(), // the database default is TO_APPLY
-  offerUrl: blankToNull(z.string().trim().url().max(500)),
+  offerUrl: blankToNull(
+    z.string().trim().url().max(500)
+      // .url() alone accepts "javascript:..." : only allow web links
+      .refine((v) => /^https?:\/\//i.test(v), { message: 'Le lien doit commencer par http:// ou https://' })
+  ),
   description: blankToNull(z.string().trim().max(5000)),
   notes: blankToNull(z.string().trim().max(5000)),
   followUpDate: blankToNull(z.coerce.date()),
