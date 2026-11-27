@@ -114,7 +114,7 @@ export default function ApplicationsListPage() {
         title="Supprimer cette candidature ?"
         message={
           toDelete
-            ? `« ${toDelete.jobTitle} » chez ${toDelete.company?.name} et son historique seront supprimés définitivement.`
+            ? `« ${toDelete.jobTitle} » chez ${toDelete.company?.name} et son historique seront supprimés définitivement. Ses documents restent dans « Mes documents ».`
             : ''
         }
         loading={deleting}

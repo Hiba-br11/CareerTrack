@@ -15,8 +15,9 @@ async function request(path, { method = 'GET', body, signal } = {}) {
       method,
       signal,
       credentials: 'include', // sends the auth cookie once login exists
-      headers: body ? { 'Content-Type': 'application/json' } : undefined,
-      body: body ? JSON.stringify(body) : undefined,
+      // FormData: do NOT set Content-Type, the browser adds the multipart boundary
+      headers: body && !(body instanceof FormData) ? { 'Content-Type': 'application/json' } : undefined,
+      body: body instanceof FormData ? body : body ? JSON.stringify(body) : undefined,
     })
   } catch (err) {
     if (err.name === 'AbortError') throw err // cancelled on purpose, not a real error

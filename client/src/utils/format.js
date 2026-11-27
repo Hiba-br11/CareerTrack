@@ -18,3 +18,8 @@ export function formatDateTime(iso) {
 export function isSafeUrl(url) {
   return typeof url === 'string' && /^https?:\/\//i.test(url)
 }
+
+export function formatSize(bytes) {
+  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} Ko`
+  return `${(bytes / 1024 / 1024).toLocaleString('fr-FR', { maximumFractionDigits: 1 })} Mo`
+}

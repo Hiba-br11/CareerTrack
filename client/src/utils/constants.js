@@ -41,3 +41,13 @@ export const EMPTY_FORM = {
   notes: '',
   followUpDate: '',
 }
+
+export const DOCUMENT_TYPE_LABELS = {
+  CV: 'CV',
+  COVER_LETTER: 'Lettre de motivation',
+  OTHER: 'Autre',
+}
+
+// Same limits as the server (the server is the one that really enforces them)
+export const MAX_UPLOAD_MB = 5
+export const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx']

@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { deleteApplication, getApplication, updateApplication } from '../api/applications.js'
+import { deleteDocument } from '../api/documents.js'
+import DocumentList from '../components/documents/DocumentList.jsx'
+import DocumentUploadForm from '../components/documents/DocumentUploadForm.jsx'
 import StatusBadge from '../components/applications/StatusBadge.jsx'
 import StatusTimeline from '../components/applications/StatusTimeline.jsx'
 import ConfirmDialog from '../components/ui/ConfirmDialog.jsx'
@@ -23,6 +26,7 @@ export default function ApplicationDetailPage() {
   const [application, setApplication] = useState(null)
   const [error, setError] = useState('')
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const [docToDelete, setDocToDelete] = useState(null)
   const [busy, setBusy] = useState(false)
   const [reloadKey, setReloadKey] = useState(0)
 
@@ -45,6 +49,20 @@ export default function ApplicationDetailPage() {
       await updateApplication(id, { status })
       setReloadKey((k) => k + 1) // reload so the timeline shows the new entry
     } catch (err) {
+      setError(err.message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function confirmDocumentDelete() {
+    setBusy(true)
+    try {
+      await deleteDocument(docToDelete.id)
+      setDocToDelete(null)
+      setReloadKey((k) => k + 1)
+    } catch (err) {
+      setDocToDelete(null)
       setError(err.message)
     } finally {
       setBusy(false)
@@ -155,13 +173,31 @@ export default function ApplicationDetailPage() {
         <StatusTimeline history={application.history} />
       </section>
 
+      <section className="space-y-4 rounded-lg border border-slate-200 bg-white p-6">
+        <h2 className="text-lg font-semibold text-slate-900">Documents</h2>
+        <DocumentList documents={application.documents ?? []} onDelete={setDocToDelete} />
+        <DocumentUploadForm
+          applicationId={application.id}
+          onUploaded={() => setReloadKey((k) => k + 1)}
+        />
+      </section>
+
       <ConfirmDialog
         open={confirmOpen}
         title="Supprimer cette candidature ?"
-        message="Elle et son historique seront supprimés définitivement."
+        message="Elle et son historique seront supprimés définitivement. Ses documents restent dans « Mes documents »."
         loading={busy}
         onConfirm={handleDelete}
         onCancel={() => setConfirmOpen(false)}
+      />
+
+      <ConfirmDialog
+        open={Boolean(docToDelete)}
+        title="Supprimer ce document ?"
+        message={docToDelete ? `« ${docToDelete.fileName} » sera supprimé définitivement.` : ''}
+        loading={busy}
+        onConfirm={confirmDocumentDelete}
+        onCancel={() => setDocToDelete(null)}
       />
     </main>
   )
