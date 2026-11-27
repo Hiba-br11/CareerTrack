@@ -1,5 +1,6 @@
 import prisma from '../config/prisma.js';
 import { HttpError } from '../utils/httpError.js';
+import { publicDocumentSelect } from './documents.service.js';
 
 const withCompany = { company: { select: { id: true, name: true } } };
 
@@ -60,6 +61,7 @@ export async function getApplication(userId, id) {
     include: {
       company: true,
       history: { orderBy: { changedAt: 'asc' } }, // timeline of the detail page
+      documents: { orderBy: { uploadedAt: 'desc' }, select: publicDocumentSelect },
     },
   });
   // 404 (not 403): do not reveal that this id exists for someone else
